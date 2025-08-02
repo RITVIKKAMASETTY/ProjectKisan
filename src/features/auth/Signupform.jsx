@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
-import useSignUp from "./useSignUp.jsx";
+import useSignup from "./useSignup.jsx";
 
 function Signupform() {
   const { register, formState, getValues, handleSubmit, reset } = useForm();
   const { errors } = formState;
-  const { signup, isPending } = useSignUp();
+  const { signup, isPending } = useSignup();
 
   function onSubmit({ fullName, email, password }) {
     signup(
