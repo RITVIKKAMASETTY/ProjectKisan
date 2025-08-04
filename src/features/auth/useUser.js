@@ -17,43 +17,23 @@
 //     error,
 //   };
 // }
-import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser, listenToAuthChanges } from "../../services/auth";
+import { useEffect } from "react";
 
 export function useUser() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    // Initial fetch of current user
-    async function fetchUser() {
-      try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-        setIsAuthenticated(!!currentUser);
-      } catch (error) {
-        console.error("Error fetching user:", error.message);
-        setUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ["user"],
+    queryFn: getCurrentUser,
+    retry: false,
+  });
 
-    fetchUser();
-
-    // Listen for auth state changes
-    const { subscription } = listenToAuthChanges((user) => {
-      console.log("Auth state changed:", user);
-      setUser(user);
-      setIsAuthenticated(!!user);
-      setIsLoading(false);
-    });
-
-    // Cleanup subscription on unmount
-    return () => subscription?.unsubscribe();
-  }, []);
-
-  return { user, isLoading, isAuthenticated };
+  return {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+    error,
+  };
 }
