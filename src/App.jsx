@@ -8,6 +8,7 @@ import Loginform from "./features/auth/Loginform";
 import Signupform from "./features/auth/Signupform";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import Dashboard from "./ui/DashBoard";
+import LandingPage from "./ui/LandingPage";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -25,6 +26,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Loginform />} />
           <Route path="/signup" element={<Signupform />} />
 
