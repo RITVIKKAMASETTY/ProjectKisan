@@ -7,10 +7,10 @@ import AppLayout from "./ui/AppLayout";
 import Loginform from "./features/auth/Loginform";
 import Signupform from "./features/auth/Signupform";
 import ProtectedRoute from "./ui/ProtectedRoute";
-import Dashboard from "./ui/DashBoard";
 import LandingPage from "./ui/LandingPage";
+import DashBoard from "./ui/DashBoard";
 import "./App.css";
-
+import CropLandPlanner from "./features/farmers/CropLandPlanner";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -39,7 +39,8 @@ function App() {
             }
           >
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<DashBoard />} />
+            <Route path="farmerForm"element={<CropLandPlanner/>}/>
             {/* Add more protected routes here as needed */}
             {/* <Route path="profile" element={<Profile />} /> */}
             {/* <Route path="settings" element={<Settings />} /> */}
