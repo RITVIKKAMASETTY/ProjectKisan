@@ -21,21 +21,6 @@ export function useCurrentUser() {
 }
 
 // -----------------------------
-// 📱 Send OTP Mutation
-// -----------------------------
-export function useSendOtp() {
-  return useMutation({
-    mutationFn: sendOtpToPhone,
-    onSuccess: () => {
-      console.log("OTP sent successfully");
-    },
-    onError: (error) => {
-      console.error("Failed to send OTP:", error.message);
-    },
-  });
-}
-
-// -----------------------------
 // 📧 Email Signup Mutation
 // -----------------------------
 export function useSignUpWithEmail() {
