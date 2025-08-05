@@ -10,7 +10,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
       console.log("ProtectedRoute: Not authenticated, redirecting to /login");
-      navigate("/login");
+      navigate("/");
     }
   }, [isAuthenticated, isLoading, navigate]);
 

@@ -7,6 +7,7 @@ import AppLayout from "./ui/AppLayout";
 import Loginform from "./features/auth/Loginform";
 import Signupform from "./features/auth/Signupform";
 import ProtectedRoute from "./ui/ProtectedRoute";
+import LandingPage from "./ui/LandingPage";
 import DashBoard from "./ui/DashBoard";
 import "./App.css";
 import CropLandPlanner from "./features/farmers/CropLandPlanner";
@@ -25,6 +26,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Loginform />} />
           <Route path="/signup" element={<Signupform />} />
 
