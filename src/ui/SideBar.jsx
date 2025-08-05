@@ -17,9 +17,9 @@ const Sidebar = ({ isOpen }) => {
   const [activeItem, setActiveItem] = useState('dashboard');
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: MdOutlineDashboard },
+    { id: 'dashboard', label: 'Dashboard', icon: MdOutlineDashboard, link: '/' },
     { id: 'crops', label: 'Crop Planner', icon: TbPlant },
-    { id: 'recommendation', label: 'Crop Recommendation', icon: MdAgriculture },
+    { id: 'recommendation', label: 'Crop Recommendation', icon: MdAgriculture, link: '/crop-recommendation' },
     { id: 'weather', label: 'Weather Alerts', icon: FiCloud },
     { id: 'market', label: 'Market Prices', icon: FiTrendingUp },
     { id: 'inventory', label: 'Inventory', icon: FiPackage },
