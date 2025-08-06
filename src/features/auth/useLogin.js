@@ -1,22 +1,27 @@
-import { useMutation } from "@tanstack/react-query";
-import { loginWithEmail } from "../../services/auth";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../../api/index';
+import { toast } from 'react-hot-toast';
 
 export function useLogin() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const { mutate: login, isPending } = useMutation({
-    mutationFn: ({ email, password }) => loginWithEmail({ email, password }),
+  return useMutation({
+    mutationFn: ({ email, password }) => login({ email, password }),
     onSuccess: (user) => {
-      toast.success(`Welcome back, ${user.email}!`);
-      navigate("/dashboard");
+      toast.success('Login successful!');
+      queryClient.setQueryData(['user'], user); // Update user cache
+      if (user.role === 'farmer') {
+        navigate('/farmer/dashboard');
+      } else if (user.role === 'buyer') {
+        navigate('/buyer/dashboard');
+      } else {
+        toast.error('Invalid user role');
+      }
     },
     onError: (error) => {
-      console.error("Login mutation error:", error.message);
       toast.error(`Login failed: ${error.message}`);
     },
   });
-
-  return { login, isPending };
 }

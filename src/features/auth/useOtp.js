@@ -1,6 +1,6 @@
 // features/auth/useOtp.js
 import { useMutation } from "@tanstack/react-query";
-import { sendOtpToPhone } from "../../services/auth";
+import { sendOtpToPhone } from "../../api/auth";
 import toast from "react-hot-toast";
 
 export function useOtp() {

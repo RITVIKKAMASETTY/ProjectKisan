@@ -1,187 +1,221 @@
-// features/auth/Signupform.jsx
-import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { useSignUp } from "./useSignUp";
-import { useOtp } from "./useOtp";
-import Loader from "../../ui/Loder";
-import { useState } from "react";
+import { useState } from 'react';
+import { useSignUp } from './useSignUp';
+import { toast } from 'react-hot-toast';
 
-function Signupform() {
-  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
-  const { signup, isPending: isSignupPending } = useSignUp();
-  const { sendOtp, isPending: isOtpPending } = useOtp();
-  const [signupMethod, setSignupMethod] = useState("email"); // "email" or "phone"
+export default function SignUpForm() {
+  const [formData, setFormData] = useState({
+    email: '',
+    phone: '',
+    password: '',
+    name: '',
+    role: 'farmer',
+    location: { district: '', state: '', coordinates: { lat: '', lng: '' } },
+    profile_data: { land_area: '', caste: '', business_type: '' },
+  });
+  const { mutate: signUp, isLoading, error } = useSignUp();
 
-  const password = watch("password");
-
-  function onSubmit(data) {
-    if (signupMethod === "email") {
-      signup(data, {
-        onSettled: () => reset(),
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes('location.')) {
+      const key = name.split('.')[1];
+      setFormData({
+        ...formData,
+        location: { ...formData.location, [key]: value },
+      });
+    } else if (name.includes('profile_data.')) {
+      const key = name.split('.')[1];
+      setFormData({
+        ...formData,
+        profile_data: { ...formData.profile_data, [key]: value },
       });
     } else {
-      sendOtp(data.phone, {
-        onSettled: () => reset(),
-      });
+      setFormData({ ...formData, [name]: value });
     }
-  }
+  };
 
-  const isPending = isSignupPending || isOtpPending;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { email, password, name, role } = formData;
+    if (!email || !password || !name || !role) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    signUp({
+      email,
+      phone: formData.phone || null,
+      password,
+      name,
+      role,
+      location: {
+        district: formData.location.district || null,
+        state: formData.location.state || null,
+        coordinates: {
+          lat: formData.location.coordinates.lat || null,
+          lng: formData.location.coordinates.lng || null,
+        },
+      },
+      profile_data: {
+        land_area: formData.profile_data.land_area || null,
+        caste: formData.profile_data.caste || null,
+        business_type: formData.profile_data.business_type || null,
+      },
+    });
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{" "}
-            <Link
-              to="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              sign in to existing account
-            </Link>
-          </p>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center mb-6">Sign Up for Flora Flow</h2>
+      {error && <p className="text-red-500 mb-4">{error.message}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your email"
+            required
+          />
         </div>
-
-        {/* Signup Method Toggle */}
-        <div className="flex rounded-lg bg-gray-100 p-1">
-          <button
-            type="button"
-            onClick={() => setSignupMethod("email")}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-              signupMethod === "email"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Email
-          </button>
-          <button
-            type="button"
-            onClick={() => setSignupMethod("phone")}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-              signupMethod === "phone"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Phone
-          </button>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="phone">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your phone number (optional)"
+          />
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="rounded-md shadow-sm space-y-4">
-            {signupMethod === "email" ? (
-              <>
-                <div>
-                  <label htmlFor="email" className="sr-only">
-                    Email address
-                  </label>
-                  <input
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /\S+@\S+\.\S+/,
-                        message: "Please enter a valid email",
-                      },
-                    })}
-                    type="email"
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Email address"
-                    disabled={isPending}
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                  )}
-                </div>
-                
-                <div>
-                  <label htmlFor="password" className="sr-only">
-                    Password
-                  </label>
-                  <input
-                    {...register("password", {
-                      required: "Password is required",
-                      minLength: {
-                        value: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                    })}
-                    type="password"
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Password"
-                    disabled={isPending}
-                  />
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="sr-only">
-                    Confirm Password
-                  </label>
-                  <input
-                    {...register("confirmPassword", {
-                      required: "Please confirm your password",
-                      validate: (value) =>
-                        value === password || "Passwords do not match",
-                    })}
-                    type="password"
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Confirm password"
-                    disabled={isPending}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div>
-                <label htmlFor="phone" className="sr-only">
-                  Phone number
-                </label>
-                <input
-                  {...register("phone", {
-                    required: "Phone number is required",
-                    pattern: {
-                      value: /^\+?[\d\s\-\(\)]+$/,
-                      message: "Please enter a valid phone number",
-                    },
-                  })}
-                  type="tel"
-                  className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Phone number (with country code)"
-                  disabled={isPending}
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                )}
-              </div>
-            )}
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text- gray-700 mb-2" htmlFor="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your name"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="role">Role</label>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="farmer">Farmer</option>
+            <option value="buyer">Buyer</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="location.district">District</label>
+          <input
+            type="text"
+            id="location.district"
+            name="location.district"
+            value={formData.location.district}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your district (optional)"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="location.state">State</label>
+          <input
+            type="text"
+            id="location.state"
+            name="location.state"
+            value={formData.location.state}
+            onChange={handleChange}
+            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your state (optional)"
+          />
+        </div>
+        {formData.role === 'farmer' && (
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="profile_data.land_area">
+                Land Area (acres)
+              </label>
+              <input
+                type="number"
+                id="profile_data.land_area"
+                name="profile_data.land_area"
+                value={formData.profile_data.land_area}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter land area (optional)"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="profile_data.caste">Caste</label>
+              <input
+                type="text"
+                id="profile_data.caste"
+                name="profile_data.caste"
+                value={formData.profile_data.caste}
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter caste (optional)"
+              />
+            </div>
+          </>
+        )}
+        {formData.role === 'buyer' && (
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="profile_data.business_type">
+              Business Type
+            </label>
+            <input
+              type="text"
+              id="profile_data.business_type"
+              name="profile_data.business_type"
+              value={formData.profile_data.business_type}
+              onChange={handleChange}
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter business type (optional)"
+            />
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending ? (
-                <Loader />
-              ) : (
-                signupMethod === "email" ? "Create Account" : "Send OTP"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+        )}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
+        >
+          {isLoading ? 'Signing up...' : 'Sign Up'}
+        </button>
+        <p className="mt-4 text-center">
+          Already have an account?{' '}
+          <a href="/login" className="text-blue-500 hover:underline">
+            Login
+          </a>
+        </p>
+      </form>
     </div>
   );
 }
-
-export default Signupform;

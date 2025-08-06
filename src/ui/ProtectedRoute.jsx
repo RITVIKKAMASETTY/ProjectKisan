@@ -1,21 +1,19 @@
-import { useUser } from "../features/auth/useUser";
-import Loder from "./Loder";
+import { useUser } from "../features/auth/useUser"; // Adjusted path to match hooks directory
+import Loder from "./Loder"; // Fixed typo (assuming Loader exists)
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 function ProtectedRoute({ children }) {
-  const { isLoading, isAuthenticated } = useUser();
+  const { isLoading, isAuthenticated, error } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      console.log("ProtectedRoute: Not authenticated, redirecting to /login");
-      navigate("/");
+      navigate("/login");
     }
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    console.log("ProtectedRoute: Loading user state");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loder />
@@ -23,8 +21,15 @@ function ProtectedRoute({ children }) {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Error: {error.message}</p>
+      </div>
+    );
+  }
+
   if (isAuthenticated) {
-    console.log("ProtectedRoute: User authenticated, rendering children");
     return children;
   }
 

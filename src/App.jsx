@@ -4,13 +4,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 
 import AppLayout from "./ui/AppLayout";
-import Loginform from "./features/auth/Loginform";
-import Signupform from "./features/auth/Signupform";
+import LoginForm from "./features/auth/Loginform";
+import SignUpForm from "./features/auth/Signupform";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import LandingPage from "./ui/LandingPage";
-import DashBoard from "./ui/DashBoard";
-import "./App.css";
-import CropLandPlanner from "./features/farmers/CropLandPlanner";
+// import DashBoard from "./components/DashBoard";
+// import CropLandPlanner from "./components/CropLandPlanner";
+// import "./App.css";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -22,13 +23,13 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Loginform />} />
-          <Route path="/signup" element={<Signupform />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUpForm />} />
 
           {/* Protected Routes */}
           <Route
@@ -38,16 +39,15 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<DashBoard />} />
-            <Route path="farmerForm"element={<CropLandPlanner/>}/>
-            {/* Add more protected routes here as needed */}
-            {/* <Route path="profile" element={<Profile />} /> */}
-            {/* <Route path="settings" element={<Settings />} /> */}
+            {/* <Route path="farmer/dashboard" element={<DashBoard role="farmer" />} />
+            <Route path="buyer/dashboard" element={<DashBoard role="buyer" />} />
+            <Route path="farmer/cropland" element={<CropLandPlanner />} /> */}
+            {/* Placeholder for buyer-specific routes */}
+            {/* <Route path="buyer/marketplace" element={<Marketplace />} /> */}
           </Route>
 
-          {/* Catch-all redirect to dashboard */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* Catch-all redirect to login for unauthenticated users */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
 
@@ -66,8 +66,9 @@ function App() {
             fontSize: "16px",
             maxWidth: "500px",
             padding: "16px 24px",
-            backgroundColor: "var(--color-grey-0)",
-            color: "var(--color-grey-700)",
+            backgroundColor: "white",
+            color: "#374151", // Tailwind gray-700
+            border: "1px solid #e5e7eb", // Tailwind gray-200
           },
         }}
       />

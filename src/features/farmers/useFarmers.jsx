@@ -11,7 +11,7 @@ import {
   deleteCropPlan,
   getCropSuggestions,
   getWeatherAlerts
-} from "../../services/farmers";
+} from "../../api/farmers";
 
 // -----------------------------
 // 🌾 LAND PLANS HOOKS
