@@ -13,9 +13,9 @@ export function useLogin() {
       toast.success('Login successful!');
       queryClient.setQueryData(['user'], user); // Update user cache
       if (user.role === 'farmer') {
-        navigate('/farmer/dashboard');
+        navigate('/');
       } else if (user.role === 'buyer') {
-        navigate('/buyer/dashboard');
+        navigate('/');
       } else {
         toast.error('Invalid user role');
       }
