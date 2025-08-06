@@ -83,20 +83,7 @@ export async function getCurrentUser() {
   return user;
 }
 
-// -----------------------------
-// 📱 Start Login/Signup with Phone OTP
-// -----------------------------
-export async function sendOtpToPhone(phone) {
-  const { error } = await supabase.auth.signInWithOtp({
-    phone,
-    options: {
-      shouldCreateUser: true // auto-create user on signup
-    }
-  });
 
-  if (error) throw new Error("Failed to send OTP");
-  return true;
-}
 
 // -----------------------------
 // 📧 Optional: Signup with Email + Password

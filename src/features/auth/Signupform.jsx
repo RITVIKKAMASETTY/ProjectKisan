@@ -2,14 +2,12 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useSignUp } from "./useSignUp";
-import { useOtp } from "./useOtp";
 import Loader from "../../ui/Loder";
 import { useState } from "react";
 
 function Signupform() {
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
   const { signup, isPending: isSignupPending } = useSignUp();
-  const { sendOtp, isPending: isOtpPending } = useOtp();
   const [signupMethod, setSignupMethod] = useState("email"); // "email" or "phone"
 
   const password = watch("password");
@@ -19,14 +17,10 @@ function Signupform() {
       signup(data, {
         onSettled: () => reset(),
       });
-    } else {
-      sendOtp(data.phone, {
-        onSettled: () => reset(),
-      });
-    }
+    } 
   }
 
-  const isPending = isSignupPending || isOtpPending;
+  const isPending = isSignupPending 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -59,22 +53,11 @@ function Signupform() {
           >
             Email
           </button>
-          <button
-            type="button"
-            onClick={() => setSignupMethod("phone")}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-              signupMethod === "phone"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Phone
-          </button>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm space-y-4">
-            {signupMethod === "email" ? (
+            {signupMethod === "email" && (
               <>
                 <div>
                   <label htmlFor="email" className="sr-only">
@@ -140,29 +123,7 @@ function Signupform() {
                   )}
                 </div>
               </>
-            ) : (
-              <div>
-                <label htmlFor="phone" className="sr-only">
-                  Phone number
-                </label>
-                <input
-                  {...register("phone", {
-                    required: "Phone number is required",
-                    pattern: {
-                      value: /^\+?[\d\s\-\(\)]+$/,
-                      message: "Please enter a valid phone number",
-                    },
-                  })}
-                  type="tel"
-                  className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Phone number (with country code)"
-                  disabled={isPending}
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                )}
-              </div>
-            )}
+            ) }
           </div>
 
           <div>
@@ -174,7 +135,7 @@ function Signupform() {
               {isPending ? (
                 <Loader />
               ) : (
-                signupMethod === "email" ? "Create Account" : "Send OTP"
+                signupMethod === "email" && "Create Account"
               )}
             </button>
           </div>
