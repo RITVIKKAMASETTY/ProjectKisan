@@ -92,7 +92,7 @@ import AuthForm from "./ui/AuthForm"
 import LandRegistration from "./ui/LandRegistration";
 import CropRecommendation from "./ui/CropRecommendation";
 import PlantingForm from "./ui/PlantingForm";
-import CropLifecycle from "./ui/CropLifecycle";
+import CropLifecycle from "./ui/CropLifecycle.jsx";
 import ReadyToSell from "./ui/ReadytoSell"
 import MarketplaceListingForm from  "./ui/MarketPalceListingForm"
 import Marketplace from "./ui/MarketPlace.jsx";
