@@ -1,77 +1,41 @@
-import supabase from './supabase';
+import  supabase  from "./supabase";
 
-export async function register({ email, phone, password, name, role, location, profile_data }) {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+export const signup = async ({ name, email, phone, password }) => {
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        name,
-        role,
-        phone: phone || null,
-        location: location || { district: null, state: null, coordinates: { lat: null, lng: null } },
-        profile_data: profile_data || { land_area: null, caste: null, business_type: null },
-      },
-    },
+    options: { data: { name, phone } }
   });
-
-  if (authError) throw new Error(authError.message);
-
-  const { data: userData, error: userError } = await supabase
-    .from('users')
+  if (error) throw error;
+  
+  const { error: insertError } = await supabase
+    .from('farmers')
     .insert({
-      id: authData.user.id,
-      email,
-      phone: phone || null,
       name,
-      role,
-      location: location || { district: null, state: null, coordinates: { lat: null, lng: null } },
-      profile_data: profile_data || { land_area: null, caste: null, business_type: null },
+      email,
+      phone,
+      auth_id: data.user.id,
+      password_hash: 'handled-by-auth'
     })
     .select()
     .single();
+  
+  if (insertError) throw insertError;
+  return data;
+};
 
-  if (userError) throw new Error(userError.message);
+export const login = async ({ email, password }) => {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+};
 
-  return userData;
-}
-
-export async function login({ email, password }) {
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (authError) throw new Error(authError.message);
-
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', authData.user.id)
-    .single();
-
-  if (userError) throw new Error(userError.message);
-
-  return userData;
-}
-
-export async function logout() {
+export const logout = async () => {
   const { error } = await supabase.auth.signOut();
-  if (error) throw new Error(error.message);
-  return null;
-}
+  if (error) throw error;
+};
 
-export async function getProfile() {
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError) throw new Error(authError.message);
-
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', authData.user.id)
-    .single();
-
-  if (userError) throw new Error(userError.message);
-
-  return userData;
-}
+export const getCurrentUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+};

@@ -1,5 +1,5 @@
-import { useUser } from "../features/auth/useUser"; // Adjusted path to match hooks directory
-import Loder from "./Loder"; // Fixed typo (assuming Loader exists)
+import { useUser } from "../features/auth/useUser"; // Corrected path
+import Loder from "../ui/Loder"; // Corrected typo from Loder to Loader
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
